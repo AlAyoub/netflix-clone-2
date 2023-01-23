@@ -6,9 +6,9 @@ import './PlanScreen.css';
 import { loadStripe } from '@stripe/stripe-js';
 
 function PlanScreen() {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState({});
     const user = useSelector(selectUser);
-    const [subscription, setSubscription] = useState(null);
+    const [subscription, setSubscription] = useState();
 
     useEffect(() => {
         db.collection('customers')
@@ -21,10 +21,9 @@ function PlanScreen() {
                         role: subscription.data().role,
                         current_period_end: subscription.data().current_period_end.seconds,
                         current_period_start: subscription.data().current_period_start.seconds,
-                    });
+                    }[setSubscription]);
                 })
             })
-
     }, [user.uid]);
 
     useEffect(() => {
@@ -48,8 +47,6 @@ function PlanScreen() {
                 setProducts(products);
             });
     }, []);
-
-    console.log(products);
 
     const loadCheckout = async (priceId) => {
         const docRef = await db
@@ -76,7 +73,7 @@ function PlanScreen() {
     };
 
     return (
-        <div className='plansScreen'>
+        <div className="plansScreen">
             <br />
             {subscription &&
                 <p>Renewal date: {new Date(subscription?.current_period_end * 1000).toLocaleDateString()}</p>}
@@ -97,13 +94,15 @@ function PlanScreen() {
 
                         <button
                             onClick={() =>
-                                !isCurrentPackage && loadCheckout(productData.prices.priceId)}
+                                !isCurrentPackage && loadCheckout(productData.prices.priceId)
+                            }
                         >
                             {isCurrentPackage ? "Current Package" : "Subscribe"}
                         </button>
-                    </div >
-                )
+                    </div>
+                );
             })}
+
         </div >
     )
 }
