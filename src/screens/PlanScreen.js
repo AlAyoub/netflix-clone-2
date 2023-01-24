@@ -6,6 +6,7 @@ import './PlanScreen.css';
 import { loadStripe } from '@stripe/stripe-js';
 
 function PlanScreen() {
+
     const [products, setProducts] = useState({});
     const user = useSelector(selectUser);
     const [subscription, setSubscription] = useState();
@@ -21,7 +22,7 @@ function PlanScreen() {
                         role: subscription.data().role,
                         current_period_end: subscription.data().current_period_end.seconds,
                         current_period_start: subscription.data().current_period_start.seconds,
-                    }[setSubscription]);
+                    });
                 })
             })
     }, [user.uid]);
@@ -80,7 +81,7 @@ function PlanScreen() {
 
             {Object.entries(products).map(([productId, productData]) => {
 
-                const isCurrentPackage = productData.name?.toLowerCase().includes(subscription?.role);
+                const isCurrentPackage = subscription && subscription.role.toLowerCase() === productData.name.toLowerCase();
 
                 return (
                     <div
